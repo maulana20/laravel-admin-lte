@@ -24,7 +24,7 @@
 							</p>
 						</a>
 						<ul class="nav nav-treeview">
-							<li class="nav-item" v-for="(route, key) in routes.admin" v-bind:key="route.path">
+							<li class="nav-item" v-for="(route, key) in $root.menu.admin" v-bind:key="route.path">
 								<router-link class="nav-link" :to="{ name : route.path }" :key="key">
 									<i class="far fa-circle nav-icon"></i>
 									<p>{{ route.name }}</p>
@@ -50,23 +50,5 @@
 	</aside>
 </template>
 <script>
-	export default {
-		data: function ()
-		{
-			return {
-				routes: {
-					admin: [
-						{
-							name: 'User',
-							path: 'user'
-						},
-						{
-							name: 'Role',
-							path: 'role'
-						}
-					]
-				}
-			}
-		}
-	}
+	export default {}
 </script>

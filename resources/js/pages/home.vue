@@ -4,7 +4,6 @@
 			<div class="card-header">Welcome</div>
 			<div class="card-body">
 				Laravel Vue APP
-				<image-carousel></image-carousel>
 			</div>
 		</div>
 	</div>

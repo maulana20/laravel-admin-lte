@@ -3182,7 +3182,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 /* harmony default export */ __webpack_exports__["default"] = ({});
 
 /***/ }),
@@ -3282,21 +3281,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-/* harmony default export */ __webpack_exports__["default"] = ({
-  data: function data() {
-    return {
-      routes: {
-        admin: [{
-          name: 'User',
-          path: 'user'
-        }, {
-          name: 'Role',
-          path: 'role'
-        }]
-      }
-    };
-  }
-});
+/* harmony default export */ __webpack_exports__["default"] = ({});
 
 /***/ }),
 
@@ -3375,9 +3360,10 @@ __webpack_require__.r(__webpack_exports__);
           password: this.password
         },
         success: function success() {
-          console.log(this.$auth.user().role); // this.$router.push({name: 'dashboard'})
-
-          document.location.href = '/dashboard';
+          console.log(this.$auth.user().role);
+          this.$router.push({
+            name: 'dashboard'
+          }); // document.location.href = '/dashboard'
         },
         error: function error(err) {
           this.has_error = true;
@@ -3527,7 +3513,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 /* harmony default export */ __webpack_exports__["default"] = ({});
 
 /***/ }),
@@ -3541,6 +3526,12 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -43278,7 +43269,28 @@ var render = function() {
       _c("sidebar"),
       _vm._v(" "),
       _c("div", { staticClass: "content-wrapper" }, [
-        _vm._m(0),
+        _c("div", { staticClass: "content-header" }, [
+          _c("div", { staticClass: "container-fluid" }, [
+            _c("div", { staticClass: "row mb-2" }, [
+              _vm._m(0),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-sm-6" }, [
+                _vm.$route.name != undefined
+                  ? _c(
+                      "ol",
+                      { staticClass: "breadcrumb float-sm-right" },
+                      _vm._l(_vm.$route.name.split("-"), function(data) {
+                        return _c("li", { staticClass: "breadcrumb-item" }, [
+                          _vm._v(_vm._s(data))
+                        ])
+                      }),
+                      0
+                    )
+                  : _vm._e()
+              ])
+            ])
+          ])
+        ]),
         _vm._v(" "),
         _c("div", { staticClass: "content" }, [
           _c("div", { staticClass: "container-fluid" }, [_c("router-view")], 1)
@@ -43297,26 +43309,8 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "content-header" }, [
-      _c("div", { staticClass: "container-fluid" }, [
-        _c("div", { staticClass: "row mb-2" }, [
-          _c("div", { staticClass: "col-sm-6" }, [
-            _c("h1", { staticClass: "m-0 text-dark" }, [_vm._v("Starter Page")])
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col-sm-6" }, [
-            _c("ol", { staticClass: "breadcrumb float-sm-right" }, [
-              _c("li", { staticClass: "breadcrumb-item" }, [
-                _c("a", { attrs: { href: "#" } }, [_vm._v("Home")])
-              ]),
-              _vm._v(" "),
-              _c("li", { staticClass: "breadcrumb-item active" }, [
-                _vm._v("Starter Page")
-              ])
-            ])
-          ])
-        ])
-      ])
+    return _c("div", { staticClass: "col-sm-6" }, [
+      _c("h1", { staticClass: "m-0 text-dark" }, [_vm._v("Starter Page")])
     ])
   },
   function() {
@@ -43452,7 +43446,7 @@ var render = function() {
                     _c(
                       "ul",
                       { staticClass: "nav nav-treeview" },
-                      _vm._l(_vm.routes.admin, function(route, key) {
+                      _vm._l(_vm.$root.menu.admin, function(route, key) {
                         return _c(
                           "li",
                           { key: route.path, staticClass: "nav-item" },
@@ -44000,20 +43994,24 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "container" }, [
-    _c("div", { staticClass: "card card-default" }, [
-      _c("div", { staticClass: "card-header" }, [_vm._v("Welcome")]),
-      _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "card-body" },
-        [_vm._v("\n\t\t\tLaravel Vue APP\n\t\t\t"), _c("image-carousel")],
-        1
-      )
-    ])
-  ])
+  return _vm._m(0)
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "container" }, [
+      _c("div", { staticClass: "card card-default" }, [
+        _c("div", { staticClass: "card-header" }, [_vm._v("Welcome")]),
+        _vm._v(" "),
+        _c("div", { staticClass: "card-body" }, [
+          _vm._v("\n\t\t\tLaravel Vue APP\n\t\t")
+        ])
+      ])
+    ])
+  }
+]
 render._withStripped = true
 
 
@@ -44142,12 +44140,6 @@ var render = function() {
                   "div",
                   { attrs: { slot: "body" }, slot: "body" },
                   [
-                    _vm.validation_errors
-                      ? _c("validation-errors", {
-                          attrs: { errors: _vm.validation_errors }
-                        })
-                      : _vm._e(),
-                    _vm._v(" "),
                     _c("div", { staticClass: "form-group" }, [
                       _c("label", [_vm._v("name")]),
                       _vm._v(" "),
@@ -44174,70 +44166,146 @@ var render = function() {
                       })
                     ]),
                     _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "form-group" },
-                      [
-                        _c("label", [_vm._v("permission")]),
-                        _vm._v(" "),
-                        _vm._l(_vm.permission, function(data, index) {
-                          return _c("div", [
-                            _c("input", {
-                              directives: [
-                                {
-                                  name: "model",
-                                  rawName: "v-model",
-                                  value: _vm.role.permission,
-                                  expression: "role.permission"
-                                }
-                              ],
-                              attrs: { type: "checkbox", id: data.id },
-                              domProps: {
-                                value: data.id,
-                                checked: Array.isArray(_vm.role.permission)
-                                  ? _vm._i(_vm.role.permission, data.id) > -1
-                                  : _vm.role.permission
-                              },
-                              on: {
-                                change: function($event) {
-                                  var $$a = _vm.role.permission,
-                                    $$el = $event.target,
-                                    $$c = $$el.checked ? true : false
-                                  if (Array.isArray($$a)) {
-                                    var $$v = data.id,
-                                      $$i = _vm._i($$a, $$v)
-                                    if ($$el.checked) {
-                                      $$i < 0 &&
-                                        _vm.$set(
-                                          _vm.role,
-                                          "permission",
-                                          $$a.concat([$$v])
-                                        )
-                                    } else {
-                                      $$i > -1 &&
-                                        _vm.$set(
-                                          _vm.role,
-                                          "permission",
-                                          $$a
-                                            .slice(0, $$i)
-                                            .concat($$a.slice($$i + 1))
-                                        )
-                                    }
-                                  } else {
-                                    _vm.$set(_vm.role, "permission", $$c)
-                                  }
-                                }
+                    _c("div", { staticClass: "form-group" }, [
+                      _c(
+                        "table",
+                        {
+                          attrs: {
+                            width: "100%",
+                            border: "1",
+                            bordercolor: "#fafcf2",
+                            cellpadding: "0",
+                            cellspacing: "0"
+                          }
+                        },
+                        _vm._l(_vm.$root.menu.admin, function(menu, index) {
+                          return _c(
+                            "tr",
+                            {
+                              attrs: {
+                                bgcolor: index % 2 != 0 ? "#A3C8AC" : "#A2D8A2"
                               }
-                            }),
-                            _vm._v(" "),
-                            _c("label", { attrs: { for: data.id } }, [
-                              _vm._v(_vm._s(data.name))
-                            ])
-                          ])
+                            },
+                            [
+                              _c(
+                                "td",
+                                {
+                                  staticStyle: {
+                                    "padding-left": "6px",
+                                    "font-weight": "bold"
+                                  }
+                                },
+                                [_vm._v(_vm._s(menu.path.split("-")[1]))]
+                              ),
+                              _vm._v(" "),
+                              _c("td", [
+                                _c("table", [
+                                  _c(
+                                    "tr",
+                                    _vm._l(_vm.permission, function(data) {
+                                      return menu.path.split("-")[1] ==
+                                        data.name.split("-")[0]
+                                        ? _c(
+                                            "td",
+                                            {
+                                              staticStyle: {
+                                                "padding-left": "6px"
+                                              }
+                                            },
+                                            [
+                                              _c("input", {
+                                                directives: [
+                                                  {
+                                                    name: "model",
+                                                    rawName: "v-model",
+                                                    value: _vm.role.permission,
+                                                    expression:
+                                                      "role.permission"
+                                                  }
+                                                ],
+                                                attrs: {
+                                                  type: "checkbox",
+                                                  id: data.id
+                                                },
+                                                domProps: {
+                                                  value: data.id,
+                                                  checked: Array.isArray(
+                                                    _vm.role.permission
+                                                  )
+                                                    ? _vm._i(
+                                                        _vm.role.permission,
+                                                        data.id
+                                                      ) > -1
+                                                    : _vm.role.permission
+                                                },
+                                                on: {
+                                                  change: function($event) {
+                                                    var $$a =
+                                                        _vm.role.permission,
+                                                      $$el = $event.target,
+                                                      $$c = $$el.checked
+                                                        ? true
+                                                        : false
+                                                    if (Array.isArray($$a)) {
+                                                      var $$v = data.id,
+                                                        $$i = _vm._i($$a, $$v)
+                                                      if ($$el.checked) {
+                                                        $$i < 0 &&
+                                                          _vm.$set(
+                                                            _vm.role,
+                                                            "permission",
+                                                            $$a.concat([$$v])
+                                                          )
+                                                      } else {
+                                                        $$i > -1 &&
+                                                          _vm.$set(
+                                                            _vm.role,
+                                                            "permission",
+                                                            $$a
+                                                              .slice(0, $$i)
+                                                              .concat(
+                                                                $$a.slice(
+                                                                  $$i + 1
+                                                                )
+                                                              )
+                                                          )
+                                                      }
+                                                    } else {
+                                                      _vm.$set(
+                                                        _vm.role,
+                                                        "permission",
+                                                        $$c
+                                                      )
+                                                    }
+                                                  }
+                                                }
+                                              }),
+                                              _vm._v(" "),
+                                              _c(
+                                                "label",
+                                                { attrs: { for: data.id } },
+                                                [_vm._v(_vm._s(data.name))]
+                                              )
+                                            ]
+                                          )
+                                        : _vm._e()
+                                    }),
+                                    0
+                                  )
+                                ])
+                              ])
+                            ]
+                          )
+                        }),
+                        0
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _vm.validation_errors
+                      ? _c("validation-errors", {
+                          attrs: { errors: _vm.validation_errors }
                         })
-                      ],
-                      2
-                    )
+                      : _vm._e()
                   ],
                   1
                 ),
@@ -59834,8 +59902,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.esm.js");
 /* harmony import */ var _middleware_auth__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./middleware/auth */ "./resources/js/middleware/auth.js");
 /* harmony import */ var _router__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./router */ "./resources/js/router.js");
-/* harmony import */ var vform__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! vform */ "./node_modules/vform/dist/vform.common.js");
-/* harmony import */ var vform__WEBPACK_IMPORTED_MODULE_9___default = /*#__PURE__*/__webpack_require__.n(vform__WEBPACK_IMPORTED_MODULE_9__);
+/* harmony import */ var _menu__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./menu */ "./resources/js/menu.js");
+/* harmony import */ var vform__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! vform */ "./node_modules/vform/dist/vform.common.js");
+/* harmony import */ var vform__WEBPACK_IMPORTED_MODULE_10___default = /*#__PURE__*/__webpack_require__.n(vform__WEBPACK_IMPORTED_MODULE_10__);
+
 
 
 
@@ -59859,11 +59929,14 @@ vue__WEBPACK_IMPORTED_MODULE_3___default.a.component('index', __webpack_require_
 vue__WEBPACK_IMPORTED_MODULE_3___default.a.component('header-template', __webpack_require__(/*! ./components/HeaderComponent.vue */ "./resources/js/components/HeaderComponent.vue")["default"]);
 vue__WEBPACK_IMPORTED_MODULE_3___default.a.component('footer-template', __webpack_require__(/*! ./components/FooterComponent.vue */ "./resources/js/components/FooterComponent.vue")["default"]);
 vue__WEBPACK_IMPORTED_MODULE_3___default.a.component('sidebar', __webpack_require__(/*! ./components/SideBarComponent.vue */ "./resources/js/components/SideBarComponent.vue")["default"]);
-[vform__WEBPACK_IMPORTED_MODULE_9__["HasError"], vform__WEBPACK_IMPORTED_MODULE_9__["AlertError"], vform__WEBPACK_IMPORTED_MODULE_9__["AlertSuccess"]].forEach(function (Component) {
+[vform__WEBPACK_IMPORTED_MODULE_10__["HasError"], vform__WEBPACK_IMPORTED_MODULE_10__["AlertError"], vform__WEBPACK_IMPORTED_MODULE_10__["AlertSuccess"]].forEach(function (Component) {
   vue__WEBPACK_IMPORTED_MODULE_3___default.a.component(Component.name, Component);
 });
 var app = new vue__WEBPACK_IMPORTED_MODULE_3___default.a({
   el: '#app',
+  data: {
+    menu: _menu__WEBPACK_IMPORTED_MODULE_9__["default"]
+  },
   router: _router__WEBPACK_IMPORTED_MODULE_8__["default"]
 });
 
@@ -60346,6 +60419,28 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ValidationErrorsComponent_vue_vue_type_template_id_6ef17fbe___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
+
+/***/ }),
+
+/***/ "./resources/js/menu.js":
+/*!******************************!*\
+  !*** ./resources/js/menu.js ***!
+  \******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+var menu = {
+  admin: [{
+    name: 'User',
+    path: 'admin-user'
+  }, {
+    name: 'Role',
+    path: 'admin-role'
+  }]
+};
+/* harmony default export */ __webpack_exports__["default"] = (menu);
 
 /***/ }),
 
@@ -60928,15 +61023,15 @@ var routes = [{
     auth: true
   }
 }, {
-  path: '/user',
-  name: 'user',
+  path: '/admin/user',
+  name: 'admin-user',
   component: __webpack_require__(/*! ./pages/user/index.vue */ "./resources/js/pages/user/index.vue")["default"],
   meta: {
     auth: true
   }
 }, {
-  path: '/role',
-  name: 'role',
+  path: '/admin/role',
+  name: 'admin-role',
   component: __webpack_require__(/*! ./pages/role/index.vue */ "./resources/js/pages/role/index.vue")["default"],
   meta: {
     auth: true

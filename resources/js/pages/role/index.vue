@@ -27,17 +27,23 @@
 			<modal v-if="show_modal" @close="show_modal = false">
 				<h3 slot="header" id="modal_title">custom header</h3>
 				<div slot="body">
-					<validation-errors :errors="validation_errors" v-if="validation_errors"></validation-errors>
 					<div class="form-group">
 						<label>name</label>
 						<input class="form-control" type="text" v-model="role.name">
 					</div>
 					<div class="form-group">
-						<label>permission</label>
-						<div v-for="(data, index) in permission">
-							<input type="checkbox" v-model="role.permission" v-bind:value="data.id" :id="data.id">&nbsp;<label :for="data.id">{{ data.name }}</label>
-						</div>
+						<table width="100%" border="1" bordercolor="#fafcf2" cellpadding="0" cellspacing="0">
+							<tr v-for="(menu, index) in $root.menu.admin" :bgcolor="(index % 2 != 0) ? '#A3C8AC' : '#A2D8A2'">
+								<td style="padding-left: 6px;  font-weight: bold;">{{ menu.path.split('-')[1] }}</td>
+								<td>
+									<table>
+										<tr><td v-for="data in permission" v-if="menu.path.split('-')[1] == data.name.split('-')[0]" style="padding-left: 6px;"><input type="checkbox" v-model="role.permission" v-bind:value="data.id" :id="data.id">&nbsp;<label :for="data.id">{{ data.name }}</label></td></tr>
+									</table>
+								</td>
+							</tr>
+						</table>
 					</div>
+					<validation-errors :errors="validation_errors" v-if="validation_errors"></validation-errors>
 				</div>
 				<div slot="footer">
 					<button class="btn btn-primary" @click="add()" v-if="session_active == 'add'">Simpan</button>

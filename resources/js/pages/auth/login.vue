@@ -41,8 +41,8 @@
 					success: function ()
 					{
 						console.log(this.$auth.user().role)
-						// this.$router.push({name: 'dashboard'})
-						document.location.href = '/dashboard'
+						this.$router.push({name: 'dashboard'})
+						// document.location.href = '/dashboard'
 					},
 					error: function (err)
 					{

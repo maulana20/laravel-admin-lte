@@ -7,6 +7,7 @@ import VueAxios from 'vue-axios'
 import VueRouter from 'vue-router'
 import auth from './middleware/auth'
 import router from './router'
+import menu from './menu'
 import { HasError, AlertError, AlertSuccess } from 'vform'
 
 window.Vue = Vue;
@@ -30,6 +31,9 @@ Vue.component('sidebar', require('./components/SideBarComponent.vue').default);
 })
 
 const app = new Vue({
-  el: '#app',
-  router
+	el: '#app',
+	data: {
+		menu: menu,
+	},
+	router
 });
