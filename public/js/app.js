@@ -3278,9 +3278,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({});
 
 /***/ }),
@@ -3572,22 +3569,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       list: {},
       permission: [],
+      group_bar: '',
       id: '',
       access: {},
       role: {
@@ -3629,15 +3616,18 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (error) {
         alert(error.message);
       });
+      var script = document.createElement('script');
+      script.src = "/js/groupBar.js";
+      document.head.appendChild(script);
+      this.group_bar = this.groupBar({});
 
       if (method == 'add') {
         $('#modal_title').html('ADD ROLE');
       } else if (method == 'edit') {
         axios.get('/roles/edit/' + id).then(function (response) {
           _this2.role.name = response.data.role.name;
-          _this2.access = response.data.access;
           _this2.id = id;
-          if (_this2.access) _this2.onPermission(_this2.access);
+          _this2.group_bar = _this2.groupBar(response.data.access);
           $('#modal_title').html('EDIT ROLE');
         })["catch"](function (error) {
           alert(error.message);
@@ -3645,14 +3635,6 @@ __webpack_require__.r(__webpack_exports__);
       } else {
         alert('Method not found !');
       }
-    },
-    onPermission: function onPermission(access) {
-      var permission = this.permission;
-      var checked = [];
-      permission.forEach(function (data, index) {
-        if (access[data.id] != undefined) checked.push(data.id);
-      });
-      this.role.permission = checked;
     },
     add: function add() {
       var _this3 = this;
@@ -3679,6 +3661,18 @@ __webpack_require__.r(__webpack_exports__);
     update: function update(id) {
       var _this4 = this;
 
+      var form = document.form;
+      var permission = [];
+
+      for (var i = 0; i < form.length; i++) {
+        if (form.elements[i].disabled) continue;
+
+        if (form.elements[i].type = 'checkbox') {
+          if (form.elements[i].checked && form.elements[i].value != '') permission.push(form.elements[i].value);
+        }
+      }
+
+      this.role.permission = permission;
       axios.post('roles/update/' + id, {
         name: this.role.name,
         permission: this.role.permission
@@ -3710,6 +3704,109 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (error) {
         alert(error.message);
       });
+    },
+    getGrouping: function getGrouping(menu) {
+      var result = [];
+      Object.keys(menu).forEach(function (parent) {
+        var mainmenu = menu[parent];
+        var grouping = [];
+        grouping.push({
+          'caption': parent,
+          'ref': 0,
+          'access': '',
+          'onClick': '',
+          'style': ''
+        });
+
+        if (mainmenu.length) {
+          mainmenu.forEach(function (submenu) {
+            var access = [];
+            var onclick = '';
+            if (submenu.node && submenu.node.length) submenu.node.forEach(function (item) {
+              access.push("'" + item + "'");
+            });
+            if (access.length > 0) onclick = "[" + access.join(",") + "]";
+            grouping.push({
+              'caption': submenu.name,
+              'ref': 1,
+              'access': submenu.access,
+              'onClick': onclick,
+              'style': 'padding-left:10px;'
+            });
+
+            if (submenu.node && submenu.node.length) {
+              submenu.node.forEach(function (childmenu) {
+                grouping.push({
+                  'caption': childmenu,
+                  'ref': 2,
+                  'access': childmenu,
+                  'onClick': '',
+                  'style': 'padding-left:20px;'
+                });
+              });
+            }
+          });
+        }
+
+        result.push(grouping);
+      });
+      return result;
+    },
+    groupBar: function groupBar(access) {
+      var max = 0;
+      var menu = this.$root.menu;
+      var permission = this.permission;
+      var grouping = this.getGrouping(menu);
+      grouping.forEach(function (item, index) {
+        max = Math.max(max, grouping[index].length);
+      });
+      var length_col = Math.floor(100 / menu.length);
+      var form_html = '<form name="form" method="post" action="" onsubmit="return false;">' + '\n';
+      form_html += '<table width="100%" border="1" bordercolor="#fafcf2" cellpadding="0" cellspacing="0">' + '\n';
+
+      for (var i = 0; i < max; i++) {
+        form_html += '<tr>' + '\n';
+        Object.keys(menu).forEach(function (parent, index) {
+          var color = index % 2 != 0 ? '#A3C8AC' : '#A2D8A2';
+          var group_list = grouping[index][i];
+
+          if (group_list != undefined) {
+            form_html += '<td height="21" width="' + length_col + '%" bgcolor="' + color + '" style="' + (group_list.style != null && group_list.style != '' ? group_list.style : 'padding-left:5px;') + '">' + '\n';
+
+            if (group_list.style != null && group_list.style != '') {
+              var font_attr = 'style="font-size:12px;"';
+              form_html += '<font color="' + (group_list.ref == 1 ? '#000000' : '#0000FF') + '" size="-2">&#9654;</font>';
+            } else {
+              var font_attr = 'style="font-size:12px; font-weight:bold; padding-left:2px;"';
+            }
+
+            if (group_list.caption != null && group_list.caption != '') {
+              if (group_list.onClick != null && group_list.onClick != '') {
+                var attr = 'id="' + group_list.access + '" onclick="' + 'onClick(this,' + group_list.onClick + ')' + '"';
+              } else {
+                var attr = 'id="' + group_list.access + '"';
+              }
+
+              var data = permission.filter(function (item) {
+                return item.name == group_list.access;
+              }).shift();
+              if (group_list.ref != 0) form_html += '<input type="checkbox" id="' + group_list.access + '" value="' + (data != undefined ? data.id : '') + '" ' + (data != undefined && access[data.id] != undefined ? 'checked' : '') + ' ' + attr + ' >&nbsp;';
+              form_html += '<label for="' + group_list.access + '"><font ' + font_attr + '>' + group_list.caption + '</font></label>';
+            } else {
+              form_html += '&nbsp;';
+            }
+
+            form_html += '</td>' + '\n';
+          } else {
+            form_html += '<td bgcolor="' + color + '">&nbsp;</td>' + '\n';
+          }
+        });
+        form_html += '</tr>' + '\n';
+      }
+
+      form_html += '</table>' + '\n';
+      form_html += '</form>' + '\n';
+      return form_html;
     }
   }
 });
@@ -43425,7 +43522,25 @@ var render = function() {
       _vm._m(0),
       _vm._v(" "),
       _c("div", { staticClass: "sidebar" }, [
-        _vm._m(1),
+        _c("div", { staticClass: "user-panel mt-3 pb-3 mb-3 d-flex" }, [
+          _vm._m(1),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "info" },
+            [
+              _c(
+                "router-link",
+                {
+                  staticClass: "d-block",
+                  attrs: { to: { name: "dashboard" } }
+                },
+                [_vm._v("Alexander Pierce")]
+              )
+            ],
+            1
+          )
+        ]),
         _vm._v(" "),
         _c("nav", { staticClass: "mt-2" }, [
           _c(
@@ -43439,41 +43554,63 @@ var render = function() {
               }
             },
             [
-              _vm.$auth.check()
-                ? _c("li", { staticClass: "nav-item has-treeview menu-open" }, [
-                    _vm._m(2),
-                    _vm._v(" "),
-                    _c(
-                      "ul",
-                      { staticClass: "nav nav-treeview" },
-                      _vm._l(_vm.$root.menu.admin, function(route, key) {
-                        return _c(
-                          "li",
-                          { key: route.path, staticClass: "nav-item" },
+              _vm._l(_vm.$root.menu, function(menu, parent) {
+                return _vm.$auth.check()
+                  ? _c(
+                      "li",
+                      { staticClass: "nav-item has-treeview menu-open" },
+                      [
+                        _c(
+                          "a",
+                          {
+                            staticClass: "nav-link active",
+                            attrs: { href: "#" }
+                          },
                           [
-                            _c(
-                              "router-link",
-                              {
-                                key: key,
-                                staticClass: "nav-link",
-                                attrs: { to: { name: route.path } }
-                              },
+                            _c("i", { staticClass: "nav-icon fas fa-th" }),
+                            _vm._v(" "),
+                            _c("p", [
+                              _vm._v(_vm._s(parent)),
+                              _c("i", {
+                                staticClass: "right fas fa-angle-left"
+                              })
+                            ])
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "ul",
+                          { staticClass: "nav nav-treeview" },
+                          _vm._l(menu, function(route, key) {
+                            return _c(
+                              "li",
+                              { key: route.path, staticClass: "nav-item" },
                               [
-                                _c("i", {
-                                  staticClass: "far fa-circle nav-icon"
-                                }),
-                                _vm._v(" "),
-                                _c("p", [_vm._v(_vm._s(route.name))])
-                              ]
+                                _c(
+                                  "router-link",
+                                  {
+                                    key: key,
+                                    staticClass: "nav-link",
+                                    attrs: { to: { name: route.path } }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "far fa-circle nav-icon"
+                                    }),
+                                    _vm._v(" "),
+                                    _c("p", [_vm._v(_vm._s(route.name))])
+                                  ]
+                                )
+                              ],
+                              1
                             )
-                          ],
-                          1
+                          }),
+                          0
                         )
-                      }),
-                      0
+                      ]
                     )
-                  ])
-                : _vm._e(),
+                  : _vm._e()
+              }),
               _vm._v(" "),
               !_vm.$auth.check()
                 ? _c(
@@ -43516,7 +43653,8 @@ var render = function() {
                     )
                   ])
                 : _vm._e()
-            ]
+            ],
+            2
           )
         ])
       ])
@@ -43548,32 +43686,11 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "user-panel mt-3 pb-3 mb-3 d-flex" }, [
-      _c("div", { staticClass: "image" }, [
-        _c("img", {
-          staticClass: "img-circle elevation-2",
-          attrs: { src: "lte/dist/img/user2-160x160.jpg", alt: "User Image" }
-        })
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "info" }, [
-        _c("a", { staticClass: "d-block", attrs: { href: "#" } }, [
-          _vm._v("Alexander Pierce")
-        ])
-      ])
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("a", { staticClass: "nav-link active", attrs: { href: "#" } }, [
-      _c("i", { staticClass: "nav-icon fas fa-th" }),
-      _vm._v(" "),
-      _c("p", [
-        _vm._v("\n\t\t\t\t\t\t\tAdministration\n\t\t\t\t\t\t\t"),
-        _c("i", { staticClass: "right fas fa-angle-left" })
-      ])
+    return _c("div", { staticClass: "image" }, [
+      _c("img", {
+        staticClass: "img-circle elevation-2",
+        attrs: { src: "lte/dist/img/user2-160x160.jpg", alt: "User Image" }
+      })
     ])
   }
 ]
@@ -44140,6 +44257,12 @@ var render = function() {
                   "div",
                   { attrs: { slot: "body" }, slot: "body" },
                   [
+                    _vm.validation_errors
+                      ? _c("validation-errors", {
+                          attrs: { errors: _vm.validation_errors }
+                        })
+                      : _vm._e(),
+                    _vm._v(" "),
                     _c("div", { staticClass: "form-group" }, [
                       _c("label", [_vm._v("name")]),
                       _vm._v(" "),
@@ -44166,146 +44289,13 @@ var render = function() {
                       })
                     ]),
                     _vm._v(" "),
-                    _c("div", { staticClass: "form-group" }, [
-                      _c(
-                        "table",
-                        {
-                          attrs: {
-                            width: "100%",
-                            border: "1",
-                            bordercolor: "#fafcf2",
-                            cellpadding: "0",
-                            cellspacing: "0"
-                          }
-                        },
-                        _vm._l(_vm.$root.menu.admin, function(menu, index) {
-                          return _c(
-                            "tr",
-                            {
-                              attrs: {
-                                bgcolor: index % 2 != 0 ? "#A3C8AC" : "#A2D8A2"
-                              }
-                            },
-                            [
-                              _c(
-                                "td",
-                                {
-                                  staticStyle: {
-                                    "padding-left": "6px",
-                                    "font-weight": "bold"
-                                  }
-                                },
-                                [_vm._v(_vm._s(menu.path.split("-")[1]))]
-                              ),
-                              _vm._v(" "),
-                              _c("td", [
-                                _c("table", [
-                                  _c(
-                                    "tr",
-                                    _vm._l(_vm.permission, function(data) {
-                                      return menu.path.split("-")[1] ==
-                                        data.name.split("-")[0]
-                                        ? _c(
-                                            "td",
-                                            {
-                                              staticStyle: {
-                                                "padding-left": "6px"
-                                              }
-                                            },
-                                            [
-                                              _c("input", {
-                                                directives: [
-                                                  {
-                                                    name: "model",
-                                                    rawName: "v-model",
-                                                    value: _vm.role.permission,
-                                                    expression:
-                                                      "role.permission"
-                                                  }
-                                                ],
-                                                attrs: {
-                                                  type: "checkbox",
-                                                  id: data.id
-                                                },
-                                                domProps: {
-                                                  value: data.id,
-                                                  checked: Array.isArray(
-                                                    _vm.role.permission
-                                                  )
-                                                    ? _vm._i(
-                                                        _vm.role.permission,
-                                                        data.id
-                                                      ) > -1
-                                                    : _vm.role.permission
-                                                },
-                                                on: {
-                                                  change: function($event) {
-                                                    var $$a =
-                                                        _vm.role.permission,
-                                                      $$el = $event.target,
-                                                      $$c = $$el.checked
-                                                        ? true
-                                                        : false
-                                                    if (Array.isArray($$a)) {
-                                                      var $$v = data.id,
-                                                        $$i = _vm._i($$a, $$v)
-                                                      if ($$el.checked) {
-                                                        $$i < 0 &&
-                                                          _vm.$set(
-                                                            _vm.role,
-                                                            "permission",
-                                                            $$a.concat([$$v])
-                                                          )
-                                                      } else {
-                                                        $$i > -1 &&
-                                                          _vm.$set(
-                                                            _vm.role,
-                                                            "permission",
-                                                            $$a
-                                                              .slice(0, $$i)
-                                                              .concat(
-                                                                $$a.slice(
-                                                                  $$i + 1
-                                                                )
-                                                              )
-                                                          )
-                                                      }
-                                                    } else {
-                                                      _vm.$set(
-                                                        _vm.role,
-                                                        "permission",
-                                                        $$c
-                                                      )
-                                                    }
-                                                  }
-                                                }
-                                              }),
-                                              _vm._v(" "),
-                                              _c(
-                                                "label",
-                                                { attrs: { for: data.id } },
-                                                [_vm._v(_vm._s(data.name))]
-                                              )
-                                            ]
-                                          )
-                                        : _vm._e()
-                                    }),
-                                    0
-                                  )
-                                ])
-                              ])
-                            ]
-                          )
-                        }),
-                        0
-                      )
-                    ]),
-                    _vm._v(" "),
-                    _vm.validation_errors
-                      ? _c("validation-errors", {
-                          attrs: { errors: _vm.validation_errors }
-                        })
-                      : _vm._e()
+                    _c("div", {
+                      staticStyle: {
+                        "margin-left": "2px",
+                        "margin-right": "2px"
+                      },
+                      domProps: { innerHTML: _vm._s(_vm.group_bar) }
+                    })
                   ],
                   1
                 ),
@@ -60432,12 +60422,73 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 var menu = {
-  admin: [{
-    name: 'User',
-    path: 'admin-user'
+  administration: [{
+    name: 'user',
+    path: 'admin-user',
+    access: 'user-list',
+    node: ['user-create', 'user-edit', 'user-delete']
   }, {
-    name: 'Role',
-    path: 'admin-role'
+    name: 'role',
+    path: 'admin-role',
+    access: 'role-list',
+    node: ['role-create', 'role-edit', 'role-delete']
+  }, {
+    name: 'show user log',
+    path: 'admin-user-log',
+    access: 'user-log-list',
+    node: []
+  }],
+  accounting: [{
+    name: 'coa',
+    path: 'accounting-coa',
+    access: 'coa-list',
+    node: []
+  }, {
+    name: 'jurnal',
+    path: 'accounting-jurnal',
+    access: 'jurnal-list',
+    node: []
+  }, {
+    name: 'general ledger',
+    path: 'accounting-general-ledger',
+    access: 'general-ledger-list',
+    node: []
+  }, {
+    name: 'trial balance',
+    path: 'accounting-trial-balance',
+    access: 'trial-balance-list',
+    node: []
+  }, {
+    name: 'balance sheet',
+    path: 'accounting-balance-sheet',
+    access: 'balance-sheet-list',
+    node: []
+  }, {
+    name: 'period',
+    path: 'accounting-period',
+    access: 'period-list',
+    node: []
+  }, {
+    name: 'posting',
+    path: 'accounting-posting',
+    access: 'posting-list',
+    node: []
+  }, {
+    name: 'closing',
+    path: 'accounting-closing',
+    access: 'closing-list',
+    node: []
+  }],
+  finance: [{
+    name: 'general cash back',
+    path: 'finance-general-cb',
+    access: 'general-cb-list',
+    node: []
+  }, {
+    name: 'inter cash back',
+    path: 'finance-inter-cb',
+    access: 'inter-cb-list',
+    node: []
   }]
 };
 /* harmony default export */ __webpack_exports__["default"] = (menu);

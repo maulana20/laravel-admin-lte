@@ -9,6 +9,14 @@ use Hash;
 
 class UserController extends Controller
 {
+	function __construct()
+	{
+		$this->middleware('permission:user-list', ['only' => ['page']]);
+		$this->middleware('permission:user-create', ['only' => ['add']]);
+		$this->middleware('permission:user-edit', ['only' => ['edit','update']]);
+		$this->middleware('permission:user-delete', ['only' => ['delete']]);
+	}
+	
 	public function page(Request $request)
 	{
 		$data = User::with('roles')->orderBy('users.id', 'DESC')->paginate(5);

@@ -10,21 +10,18 @@
 					<img src="lte/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
 				</div>
 				<div class="info">
-					<a href="#" class="d-block">Alexander Pierce</a>
+					<router-link class="d-block" :to="{ name : 'dashboard' }">Alexander Pierce</router-link>
 				</div>
 			</div>
 			<nav class="mt-2">
 				<ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-					<li class="nav-item has-treeview menu-open" v-if="$auth.check()">
+					<li class="nav-item has-treeview menu-open" v-if="$auth.check()" v-for="(menu, parent) in $root.menu">
 						<a href="#" class="nav-link active">
 							<i class="nav-icon fas fa-th"></i>
-							<p>
-								Administration
-								<i class="right fas fa-angle-left"></i>
-							</p>
+							<p>{{ parent }}<i class="right fas fa-angle-left"></i></p>
 						</a>
 						<ul class="nav nav-treeview">
-							<li class="nav-item" v-for="(route, key) in $root.menu.admin" v-bind:key="route.path">
+							<li class="nav-item" v-for="(route, key) in menu" v-bind:key="route.path">
 								<router-link class="nav-link" :to="{ name : route.path }" :key="key">
 									<i class="far fa-circle nav-icon"></i>
 									<p>{{ route.name }}</p>

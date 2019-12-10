@@ -11,7 +11,7 @@ class RoleController extends Controller
 {
 	function __construct()
 	{
-		$this->middleware('permission:role-list', ['only' => ['page','pluck','add']]);
+		$this->middleware('permission:role-list', ['only' => ['page','pluck']]);
 		$this->middleware('permission:role-create', ['only' => ['create','add','permission']]);
 		$this->middleware('permission:role-edit', ['only' => ['edit','update','permission']]);
 		$this->middleware('permission:role-delete', ['only' => ['destroy']]);
@@ -48,8 +48,9 @@ class RoleController extends Controller
 	{
 		$role = Role::find($id);
 		$access = DB::table("role_has_permissions")
+			->join("permissions", "role_has_permissions.permission_id", "=", "permissions.id")
 			->where("role_has_permissions.role_id", $id)
-			->pluck('role_has_permissions.permission_id', 'role_has_permissions.permission_id')
+			->pluck('permissions.name', 'role_has_permissions.permission_id')
 			->all();
 		
 		return response()->json(['role' => $role, 'access' => $access], 200);
